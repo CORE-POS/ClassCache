@@ -88,6 +88,9 @@ class ClassCache
         } catch (ReflectionException $ex) {
             return false;
         }
+        if (basename($def) == basename($this->file) && realpath($def) == realpath($this->file)) {
+            return false;
+        }
         $code = file_get_contents($def);
         $code = $this->stripNamespace($code);
         $uses = $this->getUseStatements($code);
