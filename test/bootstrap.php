@@ -8,4 +8,7 @@ if (!class_exists('Test\\ClassA')) {
 if (!class_exists('ClassB')) {
     include(__DIR__ . '/ClassB.php');
 }
+if (!class_exists('ClassC')) {
+    include(__DIR__ . '/ClassC.php');
+}
 

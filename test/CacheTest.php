@@ -16,6 +16,9 @@ class CacheTest extends PHPUnit_Framework_TestCase
 
         // test adding non-namespaced
         $this->assertEquals(true, $cache->add('ClassB'));
+        
+        // test path-specific class
+        $this->assertEquals(false, $cache->add('ClassC'));
 
         // internal classes can't be cached
         $this->assertEquals(false, $cache->add('DateTime'));

@@ -92,6 +92,9 @@ class ClassCache
             return false;
         }
         $code = file_get_contents($def);
+        if (strpos($code, '__FILE__') !== false || strpos($code, '__DIR__') !== false) {
+            return false;
+        }
         $code = $this->stripNamespace($code);
         $uses = $this->getUseStatements($code);
 
