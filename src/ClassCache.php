@@ -11,6 +11,12 @@ use \ReflectionException;
  */
 class ClassCache
 {
+    const E_OK             =  1;
+    const E_INTERNAL_CLASS = -1;
+    const E_NOSUCH_CLASS   = -2;
+    const E_DEF_IN_CACHE   = -3;
+    const E_PATH_SPECIFIC  = -4;
+
     /**
      * Array of cached class names
      */
@@ -67,7 +73,7 @@ class ClassCache
     /**
      * Add a class to the cache
      * @param $class [string] class name
-     * @return [bool] success
+     * @return [int] error code
      *
      * The class must be formatted predictably. Its definition must
      * be locatable via reflection & autoloading. The class
@@ -77,23 +83,23 @@ class ClassCache
     public function add($class)
     {
         if (isset($this->known[$class])) {
-            return true;
+            return self::E_OK;
         }
         try {
             $refl = new ReflectionClass($class);
             $def = $refl->getFileName();
             if ($def === false) {
-                return false;
+                return self::E_INTERNAL_CLASS;
             }
         } catch (ReflectionException $ex) {
-            return false;
+            return self::E_NOSUCH_CLASS;
         }
         if (basename($def) == basename($this->file) && realpath($def) == realpath($this->file)) {
-            return false;
+            return self::E_DEF_IN_CACHE;
         }
         $code = file_get_contents($def);
         if (strpos($code, '__FILE__') !== false || strpos($code, '__DIR__') !== false) {
-            return false;
+            return self::E_PATH_SPECIFIC;
         }
         $code = $this->stripNamespace($code);
         $uses = $this->getUseStatements($code);
@@ -117,7 +123,7 @@ class ClassCache
         fwrite($fp, "\n}\n");
         fwrite($fp, "\n}\n");
 
-        return true;
+        return self::E_OK;
     }
 
     /**
